@@ -1,5 +1,3 @@
-import shadow.bundletool.com.android.tools.r8.internal.li
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
