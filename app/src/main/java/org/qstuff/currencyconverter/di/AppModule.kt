@@ -4,6 +4,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.qstuff.currencyconverter.data.CurrencyExchangeRatesApi
 import org.qstuff.currencyconverter.data.CurrencyExchangeRepositoryImpl
+import org.qstuff.currencyconverter.domain.CurrencyConverter
 import org.qstuff.currencyconverter.domain.CurrencyExchangeRepository
 import org.qstuff.currencyconverter.ui.currency.CurrencyViewModel
 
@@ -15,7 +16,10 @@ import org.qstuff.currencyconverter.ui.currency.CurrencyViewModel
 val appModule = module {
 
     // App LAyer
-    viewModel { CurrencyViewModel(get()) }
+    viewModel { CurrencyViewModel(get(), get()) }
+
+    // Domain Layer
+    factory { CurrencyConverter() }
 
     // Data Layer
     single { CurrencyExchangeRatesApi() }

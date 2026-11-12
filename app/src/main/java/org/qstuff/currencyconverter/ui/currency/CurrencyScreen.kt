@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
+import org.qstuff.currencyconverter.domain.Currency
 
 @Composable
 fun CurrencyScreen(
@@ -49,14 +50,14 @@ fun CurrencyScreen(
 @Composable
 fun CurrencyContent(
     state: CurrencyViewModel.CurrencyUiState,
-    onSourceSelected: (CurrencyViewModel.Currency) -> Unit,
-    onTargetSelected: (CurrencyViewModel.Currency) -> Unit,
+    onSourceSelected: (Currency) -> Unit,
+    onTargetSelected: (Currency) -> Unit,
     onAmountChanged: (String) -> Unit,
     onConvertButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(top = 64.dp)
             .padding(16.dp),
@@ -112,6 +113,18 @@ fun CurrencyContent(
         ) {
             Text(text = "Convert")
         }
+        Text(
+            text = "Result:",
+            fontWeight = FontWeight.Medium,
+            fontSize = 20.sp,
+            modifier = Modifier.padding(top = 24.dp)
+        )
+        Text(
+            text = state.calculationResult ?: "Result not yet available",
+            fontWeight = FontWeight.Medium,
+            fontSize = 20.sp,
+            modifier = Modifier.padding(top = 16.dp)
+        )
     }
 }
 
@@ -119,9 +132,9 @@ fun CurrencyContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDropdownList(
-    values: List<CurrencyViewModel.Currency>,
-    selectedValue: CurrencyViewModel.Currency?,
-    onValueSelected: (CurrencyViewModel.Currency) -> Unit,
+    values: List<Currency>,
+    selectedValue: Currency?,
+    onValueSelected: (Currency) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }

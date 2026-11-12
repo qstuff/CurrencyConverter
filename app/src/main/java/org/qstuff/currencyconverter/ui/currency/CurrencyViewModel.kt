@@ -9,8 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.qstuff.currencyconverter.domain.Currency
+import org.qstuff.currencyconverter.domain.CurrencyConverter
 import org.qstuff.currencyconverter.domain.CurrencyExchangeRepository
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 
 /**
@@ -19,17 +22,14 @@ import java.math.BigDecimal
  * Retrieve the required data from CurrencyExchangeRepository
  */
 class CurrencyViewModel(
-    private val currencyExchangeRepository: CurrencyExchangeRepository
+    private val currencyExchangeRepository: CurrencyExchangeRepository,
+    private val currencyConverter: CurrencyConverter
 ) : ViewModel() {
 
     private companion object {
         const val DEFAULT_RATE_CODE = "eur"
     }
 
-    data class Currency(
-        val code: String,
-        val name: String
-    )
 
     data class CurrencyUiState(
         val currencies: List<Currency> = emptyList(),
@@ -46,7 +46,7 @@ class CurrencyViewModel(
     // It's not used for the UiState but for calculation
     // NOTE: if it's required to show the excange rate to the user in a later version
     // we should add another field to the CurrencyUiState
-    private var latestRatesMap: Map<String, BigDecimal> = emptyMap()
+    private var latestEuroRatesMap: Map<String, BigDecimal> = emptyMap()
 
     private val _uiState = MutableStateFlow(CurrencyUiState())
     val uiState: StateFlow<CurrencyUiState> = _uiState.asStateFlow()
@@ -80,7 +80,7 @@ class CurrencyViewModel(
             val ratesError = ratesResult.exceptionOrNull()
 
             ratesResult.getOrNull()?.let {
-                latestRatesMap = it.rates ?: emptyMap()
+                latestEuroRatesMap = it.rates ?: emptyMap()
             }
 
             _uiState.update {
@@ -138,6 +138,21 @@ class CurrencyViewModel(
 
     fun onConvertButtonClicked() {
         Log.d("CurrencyVM", "onConvertButtonClicked():")
-        // TODO: convert currency
+
+        val converted = currencyConverter.convert(
+            sourceCurrencyCode = _uiState.value.selectedSource?.code ?: "", // Not a good solution but time is running off
+            targetCurrencyCode = _uiState.value.selectedTarget?.code ?: "",
+            amount = _uiState.value.amountInput,
+            euroRates = latestEuroRatesMap
+
+        )
+
+        Log.d("CurrencyVM", "onConvertButtonClicked(): ==> $converted")
+
+        _uiState.update {
+            it.copy(
+                calculationResult = converted?.setScale(2, RoundingMode.HALF_UP).toString()
+            )
+        }
     }
 }
