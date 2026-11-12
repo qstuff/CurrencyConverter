@@ -8,6 +8,8 @@ import org.qstuff.currencyconverter.domain.CurrencyExchangeRepository
 import org.qstuff.currencyconverter.domain.CurrencyRates
 import java.util.concurrent.CancellationException
 
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class CurrencyExchangeRepositoryImpl(
     private val currencyExchangeRatesApi: CurrencyExchangeRatesApi
@@ -15,16 +17,26 @@ class CurrencyExchangeRepositoryImpl(
 
     override suspend fun loadCurrencyCodes(): Result<CurrencyCodes> {
         return safeCall {
-            currencyExchangeRatesApi.getCurrencyCodes().toDomain()
+            CurrencyCodes(
+                currencyExchangeRatesApi.getCurrencyCodes()
+            )
         }
     }
 
     override suspend fun loadCurrencyRates(currencyCode: String): Result<CurrencyRates> {
         return safeCall {
-            currencyExchangeRatesApi.getCurrencyRates(currencyCode).toDomain()
+            val json = currencyExchangeRatesApi.getCurrencyRates(currencyCode)
+            val date = json["date"]?.jsonPrimitive?.content
+            val ratesJson = json[currencyCode]?.jsonObject
+            val rates = ratesJson?.mapValues { (_, value) -> value.jsonPrimitive.content.toBigDecimal() }
+
+            CurrencyRates(
+                date =  date,
+                baseCurrencyCode = currencyCode,
+                rates = rates
+            )
         }
     }
-
 
     private suspend fun <T> safeCall(callBlock: suspend () -> T): Result<T> =
         try {

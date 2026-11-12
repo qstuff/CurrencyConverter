@@ -1,18 +1,22 @@
 package org.qstuff.currencyconverter.data
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import io.ktor.client.plugins.logging.Logger
+import kotlinx.serialization.json.JsonObject
+
 
 class CurrencyExchangeRatesApi {
-
 
     private companion object {
 
@@ -31,6 +35,10 @@ class CurrencyExchangeRatesApi {
         // will be mapped to ApiError.kt
         expectSuccess = true
 
+        defaultRequest {
+            url("$BASE_URL/")
+        }
+
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -43,14 +51,19 @@ class CurrencyExchangeRatesApi {
             connectTimeoutMillis = 15_000
         }
         install(Logging) {
-            level = LogLevel.BODY
+            level = LogLevel.HEADERS
+            logger = object : Logger {
+                override fun log(message: String) {
+                    Log.d("CurrencyVM: HttpClient", message)
+                }
+            }
         }
     }
 
-    suspend fun getCurrencyCodes(): CurrencyCodeResponseDto =
+    suspend fun getCurrencyCodes(): Map<String, String> =
         httpClient.get("currencies.json").body()
 
-    suspend fun getCurrencyRates(currencyCode: String): CurrencyRatesResponseDto =
+    suspend fun getCurrencyRates(currencyCode: String): JsonObject =
         httpClient.get("currencies/$currencyCode.json").body()
 
 }

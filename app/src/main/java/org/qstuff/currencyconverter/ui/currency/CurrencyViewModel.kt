@@ -1,5 +1,6 @@
 package org.qstuff.currencyconverter.ui.currency
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
@@ -72,11 +73,14 @@ class CurrencyViewModel(
             val codesResult = codesDeferred.await()
             val ratesResult = ratesDeferred.await()
 
+            codesResult.onFailure { Log.e("CurrencyVM", "Codes failed", it) }
+            ratesResult.onFailure { Log.e("CurrencyVM", "Rates failed", it) }
+
             val codesError = codesResult.exceptionOrNull()
             val ratesError = ratesResult.exceptionOrNull()
 
             ratesResult.getOrNull()?.let {
-                latestRatesMap = it.rates
+                latestRatesMap = it.rates ?: emptyMap()
             }
 
             _uiState.update {
