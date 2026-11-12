@@ -102,6 +102,7 @@ class CurrencyViewModel(
     fun onSourceSelected(
         selectedSourceCurrency: Currency
     ) {
+        Log.d("CurrencyVM", "onSourceSelected(): ${selectedSourceCurrency.code}")
         _uiState.update {
             it.copy(
                 selectedSource = selectedSourceCurrency,
@@ -113,6 +114,7 @@ class CurrencyViewModel(
     fun onTargetSelected(
         selectedTargetCurrency: Currency
     ) {
+        Log.d("CurrencyVM", "onTargetSelected(): ${selectedTargetCurrency.code}")
         _uiState.update {
             it.copy(
                 selectedTarget = selectedTargetCurrency,
@@ -124,6 +126,8 @@ class CurrencyViewModel(
     fun onAmountChanged(
         amount: String
     ) {
+        Log.d("CurrencyVM", "onAmountChanged(): $amount")
+
         _uiState.update {
             it.copy(
                 amountInput = amount,
@@ -133,6 +137,7 @@ class CurrencyViewModel(
     }
 
     fun onConvertButtonClicked() {
+        Log.d("CurrencyVM", "onConvertButtonClicked():")
         // TODO: convert currency
     }
 }
