@@ -1,6 +1,7 @@
 package org.qstuff.currencyconverter.data
 
 import kotlinx.serialization.Serializable
+import org.qstuff.currencyconverter.domain.CurrencyRates
 import java.math.BigDecimal
 
 
@@ -10,3 +11,10 @@ data class CurrencyRatesResponseDto(
     val baseCurrency: String,
     val rates: Map<String, @Serializable(with = BigDecimalSerializer::class) BigDecimal>
 )
+
+fun CurrencyRatesResponseDto.toDomain() =
+    CurrencyRates(
+        date,
+        baseCurrency,
+        rates
+    )
