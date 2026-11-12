@@ -13,7 +13,6 @@ class CurrencyExchangeRepositoryImpl(
     private val currencyExchangeRatesApi: CurrencyExchangeRatesApi
 ) : CurrencyExchangeRepository {
 
-
     override suspend fun loadCurrencyCodes(): Result<CurrencyCodes> {
         return safeCall {
             currencyExchangeRatesApi.getCurrencyCodes().toDomain()

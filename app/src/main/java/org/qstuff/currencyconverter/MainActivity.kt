@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.qstuff.currencyconverter.ui.theme.CurrencyConverterTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

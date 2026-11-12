@@ -53,6 +53,10 @@ dependencies {
     implementation(libs.ktor.client.mock)
     implementation(libs.ktor.client.okhttp)
 
+    implementation(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.compose.viewmodel)
+
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
